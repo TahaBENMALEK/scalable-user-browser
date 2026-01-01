@@ -1,0 +1,16 @@
+{
+  "name": "username-browser-backend",
+  "version": "1.0.0",
+  "description": "Backend API for username browser application",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "echo \"Tests will be added in Issue #2\""
+  },
+  "keywords": ["api", "express", "streaming", "pagination"],
+  "author": "SanadTech",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}

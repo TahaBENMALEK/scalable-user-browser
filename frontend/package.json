@@ -1,0 +1,16 @@
+{
+  "name": "username-browser-frontend",
+  "version": "1.0.0",
+  "description": "React frontend for username browser",
+  "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "echo \"Tests will be added in Issue #2\""
+  },
+  "keywords": ["react", "infinite-scroll", "virtualization"],
+  "author": "SanadTech",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}
