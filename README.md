@@ -17,25 +17,115 @@ A high-performance web application for browsing millions of usernames with alpha
 
 ## 📁 Project Structure
 ```
-username-browser/
-├── backend/          # Express.js API
-├── frontend/         # React.js app
-├── data/             # usernames.txt (not in repo)
-├── docker-compose.yml
-└── README.md
+scalable-user-browser/          ← Root directory
+│
+├── backend/                    ← Express.js API
+│   ├── src/
+│   │   ├── config/            ← Configuration files
+│   │   ├── controllers/       ← HTTP request handlers
+│   │   ├── services/          ← Business logic
+│   │   ├── repositories/      ← Data access layer
+│   │   ├── routes/            ← API route definitions
+│   │   └── utils/             ← Helper functions
+│   ├── tests/                 ← Backend tests
+│   ├── package.json
+│   ├── .eslintrc.json         ← ESLint configuration
+│   ├── .prettierrc.json       ← Prettier configuration
+│   ├── jest.config.js         ← Jest configuration
+│   └── .env.example           ← Environment variables template
+│
+├── frontend/                   ← React.js app
+│   ├── src/
+│   │   ├── components/        ← React components
+│   │   ├── services/          ← API calls
+│   │   ├── hooks/             ← Custom React hooks
+│   │   └── styles/            ← CSS/styling
+│   ├── public/                ← Static assets
+│   ├── package.json
+│   ├── .eslintrc.json         ← ESLint configuration
+│   ├── .prettierrc.json       ← Prettier configuration
+│   └── .env.example           ← Environment variables template
+│
+├── data/                       ← Data storage
+│   └── .gitkeep               ← Keeps folder in Git
+│
+├── .gitignore
+├── LICENSE
+├── README.md
+└── docker-compose.yml          ← Docker orchestration
 ```
 
-## 🚀 Getting Started
-_(Instructions will be added as the project progresses)_
+## 🛠️ Development Setup
+
+### Prerequisites
+- Node.js 18+ and npm
+- Git
+
+### Installation
+
+1. **Clone the repository**
+```bash
+   git clone <your-repo-url>
+   cd scalable-user-browser
+```
+
+2. **Backend Setup**
+```bash
+   cd backend
+   npm install
+   cp .env.example .env
+   # Edit .env with your configuration
+```
+
+3. **Frontend Setup**
+```bash
+   cd ../frontend
+   npm install
+   cp .env.example .env
+   # Edit .env with your API URL
+```
+
+### Available Scripts
+
+#### Backend
+- `npm run dev` - Start development server with hot reload
+- `npm test` - Run tests
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:coverage` - Run tests with coverage report
+- `npm run lint` - Check code quality
+- `npm run lint:fix` - Fix linting issues
+- `npm run format` - Format code with Prettier
+
+#### Frontend
+- `npm start` - Start development server (http://localhost:3000)
+- `npm test` - Run tests in watch mode
+- `npm run test:coverage` - Run tests with coverage
+- `npm run build` - Build for production
+- `npm run lint` - Check code quality
+- `npm run lint:fix` - Fix linting issues
+- `npm run format` - Format code with Prettier
 
 ## 📊 API Endpoints
-_(Will be documented with Swagger)_
+_(Will be documented with Swagger in Issue #8)_
 
 ## 👨‍💻 Development Process
 This project follows TDD (RED → GREEN → REFACTOR) with strict issue tracking and PR-based workflow.
 
+### Git Workflow
+1. Create feature branch from `main`
+2. Implement changes
+3. Run tests and linting
+4. Commit with descriptive messages
+5. Create Pull Request
+6. Merge after review
+
+## 🧪 Testing Strategy
+- **Backend**: Jest + Supertest for API testing
+- **Frontend**: React Testing Library for component testing
+- **TDD Approach**: Write failing tests first (RED), make them pass (GREEN), then refactor
+
 ---
 
 **Status**: 🏗️ In Progress  
-**Created**: 31/12/2025
-**Last Updated**: 01/01/2026
+**Created**: 2025-12-31  
+**Last Updated**: 2026-01-01

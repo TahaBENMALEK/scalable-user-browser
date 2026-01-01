@@ -1,0 +1,19 @@
+{
+  "env": {
+    "node": true,        // Enables Node.js global variables
+    "es2021": true,      // Allows modern JavaScript syntax
+    "jest": true         // Recognizes Jest testing globals
+  },
+  "extends": [
+    "eslint:recommended", // Use ESLint's recommended rules
+    "prettier"           // Disable rules that conflict with Prettier
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-console": "off",  // Allow console.log in backend
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
+  }
+}

@@ -1,16 +1,29 @@
 {
-  "name": "username-browser-backend",
+  "name": "scalable-user-browser-backend",
   "version": "1.0.0",
   "description": "Backend API for username browser application",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "echo \"Tests will be added in Issue #2\""
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/ tests/",
+    "lint:fix": "eslint src/ tests/ --fix",
+    "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\""
   },
-  "keywords": ["api", "express", "streaming", "pagination"],
+  "keywords": [
+    "api",
+    "express",
+    "streaming",
+    "pagination"
+  ],
   "author": "SanadTech",
   "license": "MIT",
-  "dependencies": {},
-  "devDependencies": {}
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1"
+  }
 }
