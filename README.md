@@ -124,8 +124,33 @@ This project follows TDD (RED → GREEN → REFACTOR) with strict issue tracking
 - **Frontend**: React Testing Library for component testing
 - **TDD Approach**: Write failing tests first (RED), make them pass (GREEN), then refactor
 
+## Current Test Status
+
+### Backend Tests
+- **Health Check**: 3/3 passing
+- **Alphabet Index**: 0/5 passing (not implemented)
+- **User Pagination**: 0/19 passing (not implemented)
+
+**Total**: 3 passing, 24 failing, 27 total
+
+Run tests:
+```bash
+cd backend
+npm test
+```
+
+Watch mode:
+```bash
+npm run test:watch
+```
+
+Coverage report:
+```bash
+npm run test:coverage
+```
+
 ---
 
 **Status**: 🏗️ In Progress  
 **Created**: 2025-12-31  
-**Last Updated**: 2026-01-01
+**Last Updated**: 2026-01-02
