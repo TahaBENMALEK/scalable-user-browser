@@ -1,10 +1,16 @@
 /**
  * User Controller
  * Handles HTTP requests for user-related endpoints
- * Delegates business logic to UserService
+ * Delegates business logic to UserService, focuses on request/response handling
  */
 
 const UserService = require('../services/userService');
+const config = require('../config');
+const {
+  validateLetter,
+  validateCursor,
+  validateLimit,
+} = require('../utils/validators');
 
 class UserController {
   /**
@@ -23,43 +29,23 @@ class UserController {
   /**
    * Get users by letter with pagination
    * GET /api/users?letter=A&cursor=0&limit=50
+   * Validates input and delegates to service layer
    */
   async getUsersByLetter(req, res, next) {
     try {
-      const { letter, cursor = '0', limit = '50' } = req.query;
+      const { letter, cursor = '0', limit } = req.query;
 
-      // Validation
-      if (!letter || letter.length !== 1 || !/^[A-Za-z]$/.test(letter)) {
-        return res.status(400).json({
-          error: 'Bad Request',
-          message: 'Invalid letter parameter. Must be A-Z',
-          code: 'INVALID_LETTER',
-        });
-      }
-
-      const parsedCursor = parseInt(cursor, 10);
-      const parsedLimit = parseInt(limit, 10);
-
-      if (isNaN(parsedCursor) || parsedCursor < 0) {
-        return res.status(400).json({
-          error: 'Bad Request',
-          message: 'Cursor must be a non-negative number',
-          code: 'INVALID_CURSOR',
-        });
-      }
-
-      if (isNaN(parsedLimit) || parsedLimit < 1 || parsedLimit > 100) {
-        return res.status(400).json({
-          error: 'Bad Request',
-          message: 'Limit must be between 1 and 100',
-          code: 'INVALID_LIMIT',
-        });
-      }
+      // Validate and normalize parameters
+      const validatedLetter = validateLetter(letter);
+      const validatedCursor = validateCursor(cursor);
+      const validatedLimit = limit
+        ? validateLimit(limit, config.pagination.maxLimit)
+        : config.pagination.defaultLimit;
 
       const result = await UserService.getUsersByLetter(
-        letter.toUpperCase(),
-        parsedCursor,
-        parsedLimit
+        validatedLetter,
+        validatedCursor,
+        validatedLimit
       );
 
       res.json(result);
@@ -69,5 +55,4 @@ class UserController {
   }
 }
 
-// Export instance methods
 module.exports = new UserController();

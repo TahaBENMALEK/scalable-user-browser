@@ -1,179 +1,83 @@
 /**
- * User Repository
- * Data access layer for username file
- * Handles file streaming without loading entire file into memory
+ * User Repository - Data access layer for user information
+ * Handles file streaming and index building with memory efficiency
+ * Exports both class and singleton instance for backward compatibility
  */
 
 const fs = require('fs');
 const readline = require('readline');
-const path = require('path');
+const config = require('../config');
 
 class UserRepository {
-  constructor(filePath = null) {
-    if (filePath) {
-        // Test mode - use provided path
-        this.filePath = filePath;
-    } else {
-        // Production mode - hardcode the path
-        this.filePath = path.resolve(__dirname, '../../../data/usernames.txt');
-    }
+  constructor(filePath) {
+    this.filePath = filePath || config.data.filePath;
     this.index = null;
+    this.totalUsers = 0;
   }
 
   /**
-   * Build alphabetical index by scanning file once
-   * Creates a map of: letter -> { count, startPosition, endPosition }
-   * @returns {Promise<Object>} Index data with letter stats
+   * Build alphabetical index from file
+   * Streams file line-by-line to avoid loading entire file into memory
+   * @returns {Object} Index metadata with letter counts and positions
    */
   async buildIndex() {
-    return new Promise((resolve, reject) => {
-      const index = {};
-      let currentLetter = null;
-      let lineCount = 0;
-      let position = 0;
+    const indexMap = new Map();
+    let currentPosition = 0;
+    let totalCount = 0;
 
-      // Check if file exists
-      if (!fs.existsSync(this.filePath)) {
-        return reject(new Error(`File not found: ${this.filePath}`));
+    const fileStream = fs.createReadStream(this.filePath, { encoding: 'utf8' });
+    const rl = readline.createInterface({
+      input: fileStream,
+      crlfDelay: Infinity,
+    });
+
+    for await (const line of rl) {
+      const username = line.trim();
+      if (username) {
+        const firstLetter = username.charAt(0).toUpperCase();
+
+        if (!indexMap.has(firstLetter)) {
+          indexMap.set(firstLetter, {
+            letter: firstLetter,
+            count: 0,
+            startPosition: currentPosition,
+          });
+        }
+
+        indexMap.get(firstLetter).count++;
+        currentPosition++;
+        totalCount++;
       }
-
-      const stream = fs.createReadStream(this.filePath, { encoding: 'utf8' });
-      const rl = readline.createInterface({
-        input: stream,
-        crlfDelay: Infinity,
-      });
-
-      rl.on('line', (line) => {
-        if (!line.trim()) return; // Skip empty lines
-
-        const firstChar = line.charAt(0).toUpperCase();
-
-        // Only process A-Z
-        if (!/^[A-Z]$/.test(firstChar)) {
-          position += Buffer.byteLength(line, 'utf8') + 1; // +1 for newline
-          return;
-        }
-
-        // New letter detected
-        if (firstChar !== currentLetter) {
-          // Close previous letter
-          if (currentLetter && index[currentLetter]) {
-            index[currentLetter].endPosition = position;
-          }
-
-          // Start new letter
-          currentLetter = firstChar;
-          if (!index[currentLetter]) {
-            index[currentLetter] = {
-              letter: currentLetter,
-              count: 0,
-              startPosition: position,
-              endPosition: position,
-            };
-          }
-        }
-
-        // Increment count for current letter
-        index[currentLetter].count++;
-        lineCount++;
-
-        position += Buffer.byteLength(line, 'utf8') + 1; // +1 for newline
-      });
-
-      rl.on('close', () => {
-        // Close last letter
-        if (currentLetter && index[currentLetter]) {
-          index[currentLetter].endPosition = position;
-        }
-
-        // Convert to array and sort
-        const indexArray = Object.values(index).sort((a, b) =>
-          a.letter.localeCompare(b.letter)
-        );
-
-        this.index = {
-          index: indexArray,
-          totalUsers: lineCount,
-        };
-
-        resolve(this.index);
-      });
-
-      rl.on('error', (error) => {
-        reject(error);
-      });
-    });
-  }
-
-  /**
-   * Stream users from file starting at specific position
-   * Reads only the required lines without loading entire file
-   * @param {number} startPosition - Byte position to start reading
-   * @param {number} limit - Maximum number of lines to read
-   * @returns {Promise<Array<string>>} Array of usernames
-   */
-  async streamUsers(startPosition, limit) {
-    return new Promise((resolve, reject) => {
-      const users = [];
-      let linesRead = 0;
-
-      const stream = fs.createReadStream(this.filePath, {
-        encoding: 'utf8',
-        start: startPosition,
-      });
-
-      const rl = readline.createInterface({
-        input: stream,
-        crlfDelay: Infinity,
-      });
-
-      rl.on('line', (line) => {
-        if (linesRead >= limit) {
-          rl.close();
-          return;
-        }
-
-        if (line.trim()) {
-          users.push(line.trim());
-          linesRead++;
-        }
-
-        if (linesRead >= limit) {
-          rl.close();
-        }
-      });
-
-      rl.on('close', () => {
-        resolve(users);
-      });
-
-      rl.on('error', (error) => {
-        reject(error);
-      });
-    });
-  }
-
-  /**
-   * Get index entry for specific letter
-   * @param {string} letter - Single letter A-Z
-   * @returns {Object|null} Index entry or null if not found
-   */
-  getIndexForLetter(letter) {
-    if (!this.index) {
-      throw new Error('Index not built. Call buildIndex() first.');
     }
 
-    const entry = this.index.index.find(
-      (item) => item.letter === letter.toUpperCase()
+    this.index = Array.from(indexMap.values()).sort((a, b) =>
+      a.letter.localeCompare(b.letter)
     );
+    this.totalUsers = totalCount;
 
-    return entry || null;
+    return this.getFullIndex();
   }
 
   /**
-   * Get total user count for a letter
-   * @param {string} letter - Single letter A-Z
-   * @returns {number} Count
+   * Get complete index with total count
+   */
+  getFullIndex() {
+    return {
+      index: this.index,
+      totalUsers: this.totalUsers,
+    };
+  }
+
+  /**
+   * Get index entry for specific letter (case insensitive)
+   */
+  getIndexForLetter(letter) {
+    const upperLetter = letter.toUpperCase();
+    return this.index.find((entry) => entry.letter === upperLetter) || null;
+  }
+
+  /**
+   * Get user count for letter
    */
   getUserCountForLetter(letter) {
     const entry = this.getIndexForLetter(letter);
@@ -181,12 +85,46 @@ class UserRepository {
   }
 
   /**
-   * Get the cached index
-   * @returns {Object|null} Index data
+   * Stream users from file position
+   * Reads file from startPosition and returns up to 'limit' usernames
+   * @param {number} startPosition - Starting line number
+   * @param {number} limit - Maximum results to return
    */
-  getIndex() {
-    return this.index;
+  async streamUsers(startPosition, limit) {
+    const users = [];
+    let currentPosition = 0;
+
+    const fileStream = fs.createReadStream(this.filePath, { encoding: 'utf8' });
+    const rl = readline.createInterface({
+      input: fileStream,
+      crlfDelay: Infinity,
+    });
+
+    for await (const line of rl) {
+      const username = line.trim();
+
+      if (username && currentPosition >= startPosition) {
+        users.push(username);
+        if (users.length >= limit) {
+          rl.close();
+          fileStream.destroy();
+          break;
+        }
+      }
+
+      if (username) {
+        currentPosition++;
+      }
+    }
+
+    return users;
   }
 }
 
-module.exports = new UserRepository();
+// Export both class and singleton instance for backward compatibility
+// Tests use class constructor, service uses singleton
+const instance = new UserRepository(config.data.filePath);
+
+module.exports = instance;
+module.exports.UserRepository = UserRepository;
+module.exports.constructor = UserRepository;
