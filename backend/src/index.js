@@ -1,19 +1,17 @@
 /**
  * Main application entry point
- * Starts the Express server and initializes routes
+ * Starts Express server and initializes routes
+ * Handles graceful error responses using custom error classes
  */
 
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
+const config = require('./config');
 const userRoutes = require('./routes/userRoutes');
 const UserService = require('./services/userService');
-
-// Load environment variables
-dotenv.config();
+const { AppError } = require('./utils/errors');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
@@ -38,28 +36,47 @@ app.use((req, res) => {
   });
 });
 
-// Error handler
+// Global error handler
+// Catches all errors and returns consistent JSON responses
 app.use((err, req, res, next) => {
   console.error('Error:', err);
-  res.status(err.status || 500).json({
-    error: err.name || 'Internal Server Error',
-    message: err.message || 'An unexpected error occurred',
-    code: err.code || 'INTERNAL_ERROR',
+
+  // Handle custom AppError instances
+  if (err instanceof AppError) {
+    return res.status(err.statusCode).json({
+      error: err.name,
+      message: err.message,
+      code: err.code,
+    });
+  }
+
+  // Handle legacy error format (for backward compatibility)
+  if (err.status && err.code) {
+    return res.status(err.status).json({
+      error: err.name || 'Error',
+      message: err.message,
+      code: err.code,
+    });
+  }
+
+  // Handle unexpected errors
+  res.status(500).json({
+    error: 'Internal Server Error',
+    message: config.server.nodeEnv === 'development' ? err.message : 'An unexpected error occurred',
+    code: 'INTERNAL_ERROR',
   });
 });
 
 // Initialize and start server
 async function startServer() {
   try {
-    // Build index at startup
     console.log('Building alphabetical index...');
     await UserService.initialize();
     console.log('Index built successfully');
 
-    // Start server
-    app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
-      console.log(`Health check: http://localhost:${PORT}/health`);
+    app.listen(config.server.port, () => {
+      console.log(`Server running on http://localhost:${config.server.port}`);
+      console.log(`Health check: http://localhost:${config.server.port}/health`);
     });
   } catch (error) {
     console.error('Failed to start server:', error.message);
@@ -67,7 +84,6 @@ async function startServer() {
   }
 }
 
-// Start server only if this is the main module
 if (require.main === module) {
   startServer();
 }
