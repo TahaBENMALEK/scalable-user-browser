@@ -14,6 +14,7 @@ class Config {
     this.server = {
       port: parseInt(process.env.PORT, 10) || 3001,
       nodeEnv: process.env.NODE_ENV || 'development',
+      baseUrl: process.env.BASE_URL || `http://localhost:${parseInt(process.env.PORT, 10) || 3001}`,
     };
 
     this.data = {
