@@ -1,12 +1,14 @@
 /**
  * Main application entry point
- * Starts Express server and initializes routes
+ * Starts Express server, initializes UserService, and sets up Swagger documentation
  * Handles graceful error responses using custom error classes
  */
 
 const express = require('express');
 const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
 const config = require('./config');
+const swaggerSpec = require('./config/swagger');
 const userRoutes = require('./routes/userRoutes');
 const UserService = require('./services/userService');
 const { AppError } = require('./utils/errors');
@@ -17,7 +19,38 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// Swagger documentation UI at /api-docs
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Swagger JSON spec at /api-docs.json
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     summary: Health check
+ *     description: Check if the API is running and responsive
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: API is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ok
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                   example: 2026-01-02T10:30:00.000Z
+ */
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -25,9 +58,10 @@ app.get('/health', (req, res) => {
   });
 });
 
+// API routes
 app.use('/api/users', userRoutes);
 
-// 404 handler
+// 404 handler - must come before error handler
 app.use((req, res) => {
   res.status(404).json({
     error: 'Not Found',
@@ -36,10 +70,11 @@ app.use((req, res) => {
   });
 });
 
-// Global error handler
-// Catches all errors and returns consistent JSON responses
+// Global error handler - catches all errors and returns consistent JSON responses
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
+  if (config.server.nodeEnv !== 'test') {
+    console.error('Error:', err);
+  }
 
   // Handle custom AppError instances
   if (err instanceof AppError) {
@@ -77,6 +112,7 @@ async function startServer() {
     app.listen(config.server.port, () => {
       console.log(`Server running on http://localhost:${config.server.port}`);
       console.log(`Health check: http://localhost:${config.server.port}/health`);
+      console.log(`API Docs: http://localhost:${config.server.port}/api-docs`);
     });
   } catch (error) {
     console.error('Failed to start server:', error.message);
@@ -84,6 +120,7 @@ async function startServer() {
   }
 }
 
+// Only start server if this file is run directly (not during tests)
 if (require.main === module) {
   startServer();
 }

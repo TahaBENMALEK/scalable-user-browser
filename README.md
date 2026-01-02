@@ -105,8 +105,50 @@ scalable-user-browser/          ← Root directory
 - `npm run lint:fix` - Fix linting issues
 - `npm run format` - Format code with Prettier
 
-## 📊 API Endpoints
-_(Will be documented with Swagger in Issue #8)_
+## 📊 API Endpoints | API Documentation:
+
+Interactive API documentation is available via Swagger UI.
+
+### Access Documentation
+
+After starting the backend server:
+
+```bash
+cd backend
+npm run dev
+```
+
+Visit the following URLs:
+
+- **Swagger UI (Interactive):** http://localhost:3001/api-docs
+- **OpenAPI Spec (JSON):** http://localhost:3001/api-docs.json
+- **Health Check:** http://localhost:3001/health
+
+### Available Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health` | Health check |
+| GET | `/api/users/index` | Get alphabetical index with counts |
+| GET | `/api/users?letter=A&cursor=0&limit=50` | Get paginated users by letter |
+
+### Testing Endpoints
+
+Use the Swagger UI to test endpoints interactively:
+
+1. Navigate to http://localhost:3001/api-docs
+2. Click on any endpoint to expand
+3. Click "Try it out"
+4. Enter parameters (if required)
+5. Click "Execute" to see live results
+
+### Environment Variables
+
+Configure the API base URL in `.env`:
+
+```bash
+BASE_URL=http://localhost:3001  # Change for production
+```
 
 ## 👨‍💻 Development Process
 This project follows TDD (RED → GREEN → REFACTOR) with strict issue tracking and PR-based workflow.
