@@ -7,6 +7,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const userRoutes = require('./routes/userRoutes');
+const UserService = require('./services/userService');
 
 // Load environment variables
 dotenv.config();
@@ -47,12 +48,28 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-    console.log(`Health check: http://localhost:${PORT}/health`);
-  });
+// Initialize and start server
+async function startServer() {
+  try {
+    // Build index at startup
+    console.log('Building alphabetical index...');
+    await UserService.initialize();
+    console.log('Index built successfully');
+
+    // Start server
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`Health check: http://localhost:${PORT}/health`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error.message);
+    process.exit(1);
+  }
 }
 
-module.exports = app; // Export for testing
+// Start server only if this is the main module
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = app;

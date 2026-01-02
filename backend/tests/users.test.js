@@ -133,8 +133,8 @@ describe('GET /api/users - Response Structure', () => {
 
 describe('GET /api/users - Pagination Logic', () => {
   it('should return different results for different cursors', async () => {
-    const response1 = await get('/api/users?letter=A&cursor=0&limit=5');
-    const response2 = await get('/api/users?letter=A&cursor=5&limit=5');
+    const response1 = await get('/api/users?letter=A&cursor=0&limit=2');
+    const response2 = await get('/api/users?letter=A&cursor=2&limit=2');
 
     if (
       response1.body.data.length > 0 &&
@@ -145,12 +145,12 @@ describe('GET /api/users - Pagination Logic', () => {
   });
 
   it('should set hasMore to false when reaching end', async () => {
-    // Request beyond available data
-    const response = await get('/api/users?letter=Z&cursor=999999&limit=10');
+    const response = await get('/api/users?letter=A&cursor=999999&limit=10');
 
-    if (response.body.data.length === 0) {
-      expect(response.body.hasMore).toBe(false);
-    }
+    expect(response.body.data).toBeDefined();
+    expect(Array.isArray(response.body.data)).toBe(true);
+    expect(response.body.data.length).toBe(0);
+    expect(response.body.hasMore).toBe(false);
   });
 
   it('should handle letter case insensitively', async () => {
