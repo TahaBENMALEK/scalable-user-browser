@@ -71,7 +71,7 @@ scalable-user-browser/
 
 1. **Clone the repository**
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/TahaBENMALEK/scalable-user-browser.git
 cd scalable-user-browser
 ```
 
@@ -91,21 +91,29 @@ cp .env.example .env
 # Edit .env with your API URL
 ```
 
-### Running with Docker (Recommended)
+## Running with Docker ( I Recommend thid)
 
-**Quick Start:**
+### Quick Start with Docker
 ```bash
-# From project root
+# Build and start
 docker-compose up -d
+
+# Check status
+docker-compose ps
+
+# View logs
+docker-compose logs -f
+
+# Stop
+docker-compose down
 ```
 
+**Access:**
 - Frontend: http://localhost:3000
-- Backend: http://localhost:3001
+- Backend API: http://localhost:3001
 - API Docs: http://localhost:3001/api-docs
 
-**See [DOCKER.md](DOCKER.md) for complete Docker documentation.**
-
-### Running Locally (Development)
+## Running Locally (Development)
 
 **Terminal 1 - Backend:**
 ```bash
@@ -121,7 +129,29 @@ npm run dev
 ```
 Frontend runs on http://localhost:3000
 
-### Available Scripts
+
+## Testing
+
+**Backend:**
+```bash
+cd backend
+npm test              # Run all tests
+npm run test:coverage # With coverage
+```
+
+**Frontend Manual Test:**
+1. Open http://localhost:3000
+2. Click any letter (A-Z)
+3. Verify users load
+4. Scroll to test infinite loading
+
+**Troubleshooting:**
+- Ports in use? Change in `docker-compose.yml`
+- Data file missing? Check `./data/usernames.txt` exists
+- Build fails? Run `docker-compose build --no-cache`
+
+
+### Extra: Available Scripts
 
 #### Backend
 - `npm start` - Start production server
