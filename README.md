@@ -259,15 +259,15 @@ npm run test:coverage
 
 ## Issues Progress
 
-- Issue #1-8: Backend implementation (COMPLETED)
-- Issue #9: React setup and base layout (IN PROGRESS)
-- Issue #10: Infinite scroll and alphabet navigation (TODO)
+- Issue #1-8: Backend implementation and testing (COMPLETED)
+- Issue #9: React setup and base layout (COMPLETED)
+- Issue #10: Infinite scroll and alphabet navigation (IN PROGRESS)
 - Issue #11: Dockerization and environment setup (TODO)
 - Issue #12: Final documentation and submission readiness (TODO)
 
 ---
 
-**Status**: In Progress  
+**Status**: Backend Complete - Frontend In Progress  
 **Created**: 2025-12-31  
 **Last Updated**: 2026-01-03  
 **Author**: Taha BENMALEK <benmalektaha.inpt@gmail.com>
