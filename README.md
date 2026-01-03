@@ -1,23 +1,23 @@
-# Username Browser 🔍
+# Username Browser
 
 A high-performance web application for browsing millions of usernames with alphabetical indexing and infinite scroll.
 
-## 🎯 Project Goals
+## Project Goals
 - Stream 10M+ usernames without loading them into memory
 - Alphabetical index (A–Z) built at startup
 - Cursor-based pagination API
 - Virtualized infinite scroll frontend
 - Full Docker support
 
-## 🏗️ Architecture
+## Architecture
 - **Backend**: Node.js + Express.js
-- **Frontend**: React.js
+- **Frontend**: React.js + Vite + Tailwind CSS
 - **Principles**: TDD, OOP, SOLID, Clean Architecture
 - **Data**: File-based streaming from `usernames.txt`
 
-## 📁 Project Structure
+## Project Structure
 ```
-scalable-user-browser/          ← Root directory
+scalable-user-browser/          
 │
 ├── backend/                    ← Express.js API
 │   ├── src/
@@ -35,14 +35,19 @@ scalable-user-browser/          ← Root directory
 │   └── .env.example           ← Environment variables template
 │
 ├── frontend/                   ← React.js app
+│   ├── index.html             ← Entry HTML file
 │   ├── src/
 │   │   ├── components/        ← React components
-│   │   ├── services/          ← API calls
-│   │   ├── hooks/             ← Custom React hooks
-│   │   └── styles/            ← CSS/styling
-│   ├── public/                ← Static assets
+│   │   ├── config/            ← Configuration files
+│   │   ├── services/          ← API service layer
+│   │   ├── App.jsx            ← Root component
+│   │   ├── main.jsx           ← Application entry point
+│   │   └── index.css          ← Global styles with Tailwind
 │   ├── package.json
-│   ├── .eslintrc.json         ← ESLint configuration
+│   ├── vite.config.js         ← Vite configuration
+│   ├── tailwind.config.js     ← Tailwind configuration
+│   ├── postcss.config.js      ← PostCSS configuration
+│   ├── .eslintrc.cjs          ← ESLint configuration
 │   ├── .prettierrc.json       ← Prettier configuration
 │   └── .env.example           ← Environment variables template
 │
@@ -52,10 +57,10 @@ scalable-user-browser/          ← Root directory
 ├── .gitignore
 ├── LICENSE
 ├── README.md
-└── docker-compose.yml          ← Docker orchestration
+└── docker-compose.yml          ← Docker orchestration (coming soon)
 ```
 
-## 🛠️ Development Setup
+## Development Setup
 
 ### Prerequisites
 - Node.js 18+ and npm
@@ -65,29 +70,46 @@ scalable-user-browser/          ← Root directory
 
 1. **Clone the repository**
 ```bash
-   git clone <your-repo-url>
-   cd scalable-user-browser
+git clone <your-repo-url>
+cd scalable-user-browser
 ```
 
 2. **Backend Setup**
 ```bash
-   cd backend
-   npm install
-   cp .env.example .env
-   # Edit .env with your configuration
+cd backend
+npm install
+cp .env.example .env
+# Edit .env with your configuration
 ```
 
 3. **Frontend Setup**
 ```bash
-   cd ../frontend
-   npm install
-   cp .env.example .env
-   # Edit .env with your API URL
+cd ../frontend
+npm install
+cp .env.example .env
+# Edit .env with your API URL
 ```
+
+### Running the Application
+
+**Terminal 1 - Backend:**
+```bash
+cd backend
+npm start
+```
+Backend runs on http://localhost:3001
+
+**Terminal 2 - Frontend:**
+```bash
+cd frontend
+npm run dev
+```
+Frontend runs on http://localhost:3000
 
 ### Available Scripts
 
 #### Backend
+- `npm start` - Start production server
 - `npm run dev` - Start development server with hot reload
 - `npm test` - Run tests
 - `npm run test:watch` - Run tests in watch mode
@@ -97,15 +119,29 @@ scalable-user-browser/          ← Root directory
 - `npm run format` - Format code with Prettier
 
 #### Frontend
-- `npm start` - Start development server (http://localhost:3000)
-- `npm test` - Run tests in watch mode
-- `npm run test:coverage` - Run tests with coverage
+- `npm run dev` - Start Vite development server with hot reload
 - `npm run build` - Build for production
+- `npm run preview` - Preview production build locally
 - `npm run lint` - Check code quality
 - `npm run lint:fix` - Fix linting issues
 - `npm run format` - Format code with Prettier
 
-## 📊 API Endpoints | API Documentation:
+## Technology Stack
+
+### Backend
+- **Node.js + Express.js** - REST API server
+- **File Streaming** - Memory-efficient data access
+- **Jest + Supertest** - Testing framework
+- **Swagger/OpenAPI** - API documentation
+
+### Frontend
+- **React 18.2** - UI library
+- **Vite 5.0** - Build tool and dev server
+- **Tailwind CSS 3.4** - Utility-first styling
+- **Axios 1.6** - HTTP client
+- **react-window** - List virtualization (prepared)
+
+## API Documentation
 
 Interactive API documentation is available via Swagger UI.
 
@@ -115,7 +151,7 @@ After starting the backend server:
 
 ```bash
 cd backend
-npm run dev
+npm start
 ```
 
 Visit the following URLs:
@@ -144,13 +180,23 @@ Use the Swagger UI to test endpoints interactively:
 
 ### Environment Variables
 
-Configure the API base URL in `.env`:
-
+**Backend (.env):**
 ```bash
-BASE_URL=http://localhost:3001  # Change for production
+PORT=3001
+NODE_ENV=development
+BASE_URL=http://localhost:3001
+DATA_FILE_PATH=./data/usernames.txt
+DEFAULT_PAGE_LIMIT=50
+MAX_PAGE_LIMIT=100
 ```
 
-## 👨‍💻 Development Process
+**Frontend (.env):**
+```bash
+VITE_API_BASE_URL=http://localhost:3001
+```
+
+## Development Process
+
 This project follows TDD (RED → GREEN → REFACTOR) with strict issue tracking and PR-based workflow.
 
 ### Git Workflow
@@ -161,14 +207,31 @@ This project follows TDD (RED → GREEN → REFACTOR) with strict issue tracking
 5. Create Pull Request
 6. Merge after review
 
-## 🧪 Testing Strategy
+### Branch Naming Convention
+```
+feature/issue-X-descriptive-name
+```
+
+### Commit Message Format
+```
+Brief summary (imperative mood)
+
+- Bullet point details
+- What changed and why
+- Reference to issue
+
+Addresses Issue #X
+```
+
+## Testing Strategy
+
 - **Backend**: Jest + Supertest for API testing
-- **Frontend**: React Testing Library for component testing
+- **Frontend**: React Testing Library for component testing (coming in Issue #10+)
 - **TDD Approach**: Write failing tests first (RED), make them pass (GREEN), then refactor
 
-## Current Test Status
+### Current Test Status
 
-### Backend Tests
+#### Backend Tests
 - **Health Check**: 2/2 passing
 - **Repository Layer**: 12/12 passing
 - **User Index API**: 5/5 passing
@@ -194,8 +257,17 @@ Coverage report:
 npm run test:coverage
 ```
 
+## Issues Progress
+
+- Issue #1-8: Backend implementation and testing (COMPLETED)
+- Issue #9: React setup and base layout (COMPLETED)
+- Issue #10: Infinite scroll and alphabet navigation (IN PROGRESS)
+- Issue #11: Dockerization and environment setup (TODO)
+- Issue #12: Final documentation and submission readiness (TODO)
+
 ---
 
-**Status**: 🏗️ In Progress  
+**Status**: Backend Complete - Frontend In Progress  
 **Created**: 2025-12-31  
-**Last Updated**: 2026-01-02
+**Last Updated**: 2026-01-03  
+**Author**: Taha BENMALEK <benmalektaha.inpt@gmail.com>
