@@ -65,12 +65,13 @@ scalable-user-browser/
 ### Prerequisites
 - Node.js 18+ and npm
 - Git
+- Docker and Docker Compose (optional, for containerized deployment)
 
 ### Installation
 
 1. **Clone the repository**
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/TahaBENMALEK/scalable-user-browser.git
 cd scalable-user-browser
 ```
 
@@ -90,7 +91,29 @@ cp .env.example .env
 # Edit .env with your API URL
 ```
 
-### Running the Application
+## Running with Docker ( I Recommend thid)
+
+### Quick Start with Docker
+```bash
+# Build and start
+docker-compose up -d
+
+# Check status
+docker-compose ps
+
+# View logs
+docker-compose logs -f
+
+# Stop
+docker-compose down
+```
+
+**Access:**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:3001
+- API Docs: http://localhost:3001/api-docs
+
+## Running Locally (Development)
 
 **Terminal 1 - Backend:**
 ```bash
@@ -106,7 +129,29 @@ npm run dev
 ```
 Frontend runs on http://localhost:3000
 
-### Available Scripts
+
+## Testing
+
+**Backend:**
+```bash
+cd backend
+npm test              # Run all tests
+npm run test:coverage # With coverage
+```
+
+**Frontend Manual Test:**
+1. Open http://localhost:3000
+2. Click any letter (A-Z)
+3. Verify users load
+4. Scroll to test infinite loading
+
+**Troubleshooting:**
+- Ports in use? Change in `docker-compose.yml`
+- Data file missing? Check `./data/usernames.txt` exists
+- Build fails? Run `docker-compose build --no-cache`
+
+
+### Extra: Available Scripts
 
 #### Backend
 - `npm start` - Start production server
@@ -194,6 +239,60 @@ MAX_PAGE_LIMIT=100
 ```bash
 VITE_API_BASE_URL=http://localhost:3001
 ```
+
+## Development Process
+
+This project follows TDD (RED → GREEN → REFACTOR) with strict issue tracking and PR-based workflow.
+
+## Design Decisions
+
+### 1. Alphabet Navigation Only (No Full List by Default)
+**Decision:** Empty state on load, users select a letter to browse.
+
+**Rationale:**
+- Loading 10M users sequentially would take several minutes
+- Defeats the purpose of efficient alphabetical indexing
+- Most users want specific letter ranges, not to scroll through millions
+- Aligns with technical requirement: "algorithmic efficiency and analytical skills"
+- Provides instant initial load with responsive alphabet menu
+
+### 2. No Search Functionality
+**Decision:** Alphabet navigation is the primary and sufficient interface.
+
+**Rationale:**
+- Not mentioned in technical requirements
+- Alphabet navigation provides "easy navigation through alphabetized list" as specified
+- Search would require different indexing strategy (prefix trees/elasticsearch) outside scope
+- Keeps focus on core requirement: efficient display and navigation of large sorted datasets
+- Simple, performant solution matching the 5-day timeline
+
+### 3. List Virtualization Strategy
+**Decision:** Use react-window with InfiniteLoader for rendering optimization.
+
+**Rationale:**
+- Only renders visible items (12-15 at a time in 600px viewport)
+- Maintains smooth 60fps scrolling regardless of dataset size
+- Memory efficient: O(1) memory usage instead of O(n)
+- Industry-standard solution for large lists (used by Twitter, Facebook, etc.)
+
+### 4. Color Palette Selection
+**Decision:** Extract colors from SanadTech company logo.
+
+**Rationale:**
+- Shows attention to detail and company research
+- Creates brand alignment and professional appearance
+- Used HTML Color Picker tool for accurate extraction
+- Demonstrates thoughtful design approach within technical test context
+
+### 5. File-Based Storage (No Database)
+**Decision:** Stream data directly from text file using Node.js readline.
+
+**Rationale:**
+- Requirements allow "file-based or backend/database"
+- Simpler deployment (no database setup required)
+- Demonstrates efficient streaming algorithms
+- Index built once at startup, then kept in memory
+- Suitable for read-only, sorted data scenarios
 
 ## Development Process
 

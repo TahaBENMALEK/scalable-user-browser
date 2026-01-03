@@ -1,0 +1,16 @@
+# Docker ignore for frontend
+# Excludes unnecessary files from Docker build context
+
+node_modules
+npm-debug.log
+dist
+build
+.env
+.env.*
+!.env.example
+*.log
+.git
+.gitignore
+README.md
+.eslintrc.cjs
+.prettierrc.json
