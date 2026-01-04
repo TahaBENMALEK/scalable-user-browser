@@ -20,7 +20,6 @@ A high-performance web application for browsing millions of usernames with alpha
 - **[Architecture Overview](docs/ARCHITECTURE.md)** - System design, flow diagrams, and technical decisions
 - **[Performance Benchmarks](docs/PERFORMANCE.md)** - Startup time, latency, memory usage, and scalability metrics
 - **[API Examples](docs/API_EXAMPLES.md)** - Complete usage guide with curl and JavaScript examples
-- **[API Reference](http://localhost:3001/api-docs)** - Interactive Swagger documentation (after starting server)
 
 ## Project Structure
 ```
