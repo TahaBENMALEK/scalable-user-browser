@@ -234,17 +234,23 @@ Having issues? Check the [Troubleshooting Guide](docs/TROUBLESHOOTING.md) or ope
 **Project Type:** Technical Assessment for Sanadtech PFE Internship  
 **Duration:** 5 days (Dec 31, 2025 - Jan 4, 2026)  
 **Status:** Production Ready 
+
 **Latest Evidences:**
+
 **New Menu Loaded from Sanadtech Sample Data**  
+
 <img width="1181" height="357" alt="new users" src="https://github.com/user-attachments/assets/1a2c902f-6a63-4913-889b-07fcb66d449c" />
 
 **Clicking on a Letter Output**  
+
 <img width="1366" height="727" alt="app running final" src="https://github.com/user-attachments/assets/54714b96-28f0-464c-ac59-c76e927eb7f8" />
 
 **Loading While Navigating**  
+
 <img width="1366" height="728" alt="loading" src="https://github.com/user-attachments/assets/87de7db4-4d9a-4c49-a071-bb900e1d5ba1" />
 
 **Smooth Loading Until the End of List per Letter**  
+
 <img width="1366" height="728" alt="smooth load until the end" src="https://github.com/user-attachments/assets/b802ba93-f8a3-4698-9cbb-46fde61e737a" />
 
 **Author:** Taha BENMALEK <benmalektaha.inpt@gmail.com>
