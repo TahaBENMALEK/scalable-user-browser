@@ -152,10 +152,11 @@ scalable-user-browser/
 
 The application uses the **Sanadtech brand color palette** for a cohesive visual identity:
 
-- **Primary Blue:** `#1e40af` - Navigation and primary actions
-- **Accent Blue:** `#3b82f6` - Interactive elements and highlights
+- **Primary Orange (Flamingo):** `#f76531` - Navigation and primary actions
+- **Accent Orange (Flame Pea):** `#e66536` - Interactive elements and highlights
+- **Dark Gray (Tundora/Scorpion):** `#4b4a4a` / `#5d5c5c` - Text and borders
+- **Warm Tones:** `#d1633c`, `#ba6242`, `#a26049` - Accent colors
 - **Background:** `#f8fafc` - Clean, professional interface
-- **Text:** `#1e293b` - High contrast for readability
 
 The UI design prioritizes functionality and performance while maintaining a modern, professional appearance aligned with Sanadtech's brand identity.
 
@@ -237,4 +238,4 @@ Having issues? Check the [Troubleshooting Guide](docs/TROUBLESHOOTING.md) or ope
 
 ## License
 
-MIT License - See LICENSE file for details
+MIT License - Free To use this project for learning and educationg puposes! - See LICENSE file for more details
