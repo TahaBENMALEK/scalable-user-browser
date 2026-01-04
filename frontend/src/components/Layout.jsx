@@ -4,7 +4,7 @@
  * Provides consistent structure for header and content
  */
 
-import Header from './header';
+import Header from './Header';
 
 function Layout({ children }) {
   return (

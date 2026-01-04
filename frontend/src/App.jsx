@@ -4,7 +4,7 @@
  * Integrates alphabet navigation and user list with infinite scroll
  */
 
-import Layout from './components/layout';
+import Layout from './components/Layout';
 import AlphabetNav from './components/AlphabetNav';
 import UserList from './components/UserList';
 import useUserBrowser from './hooks/useUserBrowser';

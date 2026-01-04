@@ -15,6 +15,12 @@ A high-performance web application for browsing millions of usernames with alpha
 - **Principles**: TDD, OOP, SOLID, Clean Architecture
 - **Data**: File-based streaming from `usernames.txt`
 
+## Documentation
+
+- **[Architecture Overview](docs/ARCHITECTURE.md)** - System design, flow diagrams, and technical decisions
+- **[Performance Benchmarks](docs/PERFORMANCE.md)** - Startup time, latency, memory usage, and scalability metrics
+- **[API Examples](docs/API_EXAMPLES.md)** - Complete usage guide with curl and JavaScript examples
+
 ## Project Structure
 ```
 scalable-user-browser/          
@@ -28,80 +34,79 @@ scalable-user-browser/
 │   │   ├── routes/            ← API route definitions
 │   │   └── utils/             ← Helper functions
 │   ├── tests/                 ← Backend tests
-│   ├── package.json
-│   ├── .eslintrc.json         ← ESLint configuration
-│   ├── .prettierrc.json       ← Prettier configuration
-│   ├── jest.config.js         ← Jest configuration
-│   └── .env.example           ← Environment variables template
+│   ├── Dockerfile             ← Backend container config
+│   └── package.json
 │
 ├── frontend/                   ← React.js app
-│   ├── index.html             ← Entry HTML file
 │   ├── src/
 │   │   ├── components/        ← React components
 │   │   ├── config/            ← Configuration files
+│   │   ├── hooks/             ← Custom React hooks
 │   │   ├── services/          ← API service layer
-│   │   ├── App.jsx            ← Root component
-│   │   ├── main.jsx           ← Application entry point
-│   │   └── index.css          ← Global styles with Tailwind
-│   ├── package.json
-│   ├── vite.config.js         ← Vite configuration
-│   ├── tailwind.config.js     ← Tailwind configuration
-│   ├── postcss.config.js      ← PostCSS configuration
-│   ├── .eslintrc.cjs          ← ESLint configuration
-│   ├── .prettierrc.json       ← Prettier configuration
-│   └── .env.example           ← Environment variables template
+│   │   └── App.jsx            ← Root component
+│   ├── Dockerfile             ← Frontend container config
+│   ├── nginx.conf             ← Nginx configuration
+│   └── package.json
 │
 ├── data/                       ← Data storage
-│   └── .gitkeep               ← Keeps folder in Git
+│   └── usernames.txt          ← 10M+ usernames (add your file here)
 │
-├── .gitignore
-├── LICENSE
-├── README.md
-└── docker-compose.yml          ← Docker orchestration (coming soon)
+├── docs/                       ← Documentation
+│   ├── ARCHITECTURE.md        ← System design
+│   ├── PERFORMANCE.md         ← Benchmarks
+│   └── API_EXAMPLES.md        ← Usage guide
+│
+├── docker-compose.yml          ← Docker orchestration
+└── README.md
 ```
+
+## Quick Start with Docker
+
+### Prerequisites
+- Docker Engine 20.10+
+- Docker Compose 2.0+
+- Data file at `./data/usernames.txt`
+
+### Build and Start
+
+```bash
+# Build and start all services
+docker-compose up -d
+
+# Check status
+docker-compose ps
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+### Access
+
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:3001
+- **API Docs**: http://localhost:3001/api-docs
 
 ## Development Setup
 
-### Prerequisites
-- Node.js 18+ and npm
-- Git
+### Running Locally (Without Docker)
 
-### Installation
-
-1. **Clone the repository**
-```bash
-git clone <your-repo-url>
-cd scalable-user-browser
-```
-
-2. **Backend Setup**
+**Backend:**
 ```bash
 cd backend
 npm install
 cp .env.example .env
-# Edit .env with your configuration
-```
-
-3. **Frontend Setup**
-```bash
-cd ../frontend
-npm install
-cp .env.example .env
-# Edit .env with your API URL
-```
-
-### Running the Application
-
-**Terminal 1 - Backend:**
-```bash
-cd backend
 npm start
 ```
 Backend runs on http://localhost:3001
 
-**Terminal 2 - Frontend:**
+**Frontend:**
 ```bash
 cd frontend
+npm install
+cp .env.example .env
 npm run dev
 ```
 Frontend runs on http://localhost:3000
@@ -115,159 +120,158 @@ Frontend runs on http://localhost:3000
 - `npm run test:watch` - Run tests in watch mode
 - `npm run test:coverage` - Run tests with coverage report
 - `npm run lint` - Check code quality
-- `npm run lint:fix` - Fix linting issues
 - `npm run format` - Format code with Prettier
 
 #### Frontend
-- `npm run dev` - Start Vite development server with hot reload
+- `npm run dev` - Start Vite development server
 - `npm run build` - Build for production
-- `npm run preview` - Preview production build locally
+- `npm run preview` - Preview production build
 - `npm run lint` - Check code quality
-- `npm run lint:fix` - Fix linting issues
 - `npm run format` - Format code with Prettier
+
+## Testing
+
+### Backend Tests
+```bash
+cd backend
+npm test              # Run all tests (38 passing)
+npm run test:coverage # With coverage report
+```
+
+### Frontend Manual Testing
+1. Open http://localhost:3000
+2. Click any letter (A-Z) in alphabet navigation
+3. Verify users load in virtualized list
+4. Scroll down to test infinite loading
+5. Switch letters to verify list updates
+
+### Docker Testing
+```bash
+# Verify containers are healthy
+docker-compose ps
+
+# Test backend health
+curl http://localhost:3001/health
+
+# Test alphabet index
+curl http://localhost:3001/api/users/index
+
+# Test pagination
+curl "http://localhost:3001/api/users?letter=A&cursor=0&limit=10"
+```
+
+## Troubleshooting
+
+### Ports Already in Use
+```bash
+# Change ports in docker-compose.yml
+ports:
+  - "3002:3001"  # Backend
+  - "3001:80"    # Frontend
+```
+
+### Data File Not Found
+```bash
+# Verify file exists
+ls -la ./data/usernames.txt
+
+# Check backend logs
+docker-compose logs backend
+```
+
+### Build Fails
+```bash
+# Clear cache and rebuild
+docker-compose build --no-cache
+
+# Remove all containers and rebuild
+docker-compose down -v
+docker-compose up -d --build
+```
+
+### Frontend Can't Connect to Backend
+```bash
+# Verify backend is running
+curl http://localhost:3001/health
+
+# Check frontend environment variables
+cat frontend/.env
+# Should have: VITE_API_BASE_URL=http://localhost:3001
+```
 
 ## Technology Stack
 
 ### Backend
 - **Node.js + Express.js** - REST API server
-- **File Streaming** - Memory-efficient data access
+- **File Streaming** - Memory-efficient data access (readline module)
 - **Jest + Supertest** - Testing framework
 - **Swagger/OpenAPI** - API documentation
 
 ### Frontend
 - **React 18.2** - UI library
 - **Vite 5.0** - Build tool and dev server
-- **Tailwind CSS 3.4** - Utility-first styling (colors extracted from SanadTech logo)
+- **Tailwind CSS 3.4** - Utility-first styling
 - **Axios 1.6** - HTTP client
-- **react-window + react-window-infinite-loader** - List virtualization with infinite scroll
+- **react-window** - List virtualization for infinite scroll
 
-## API Documentation
+### DevOps
+- **Docker** - Containerization with multi-stage builds
+- **Nginx** - Production web server for frontend
+- **GitHub Actions** - CI/CD pipeline (optional)
 
-Interactive API documentation is available via Swagger UI.
+## Design Decisions
 
-### Access Documentation
+### 1. Alphabet Navigation Only
+Empty state on load, users select a letter to browse.
 
-After starting the backend server:
+**Rationale:** Loading 10M users sequentially would take minutes and defeat the purpose of efficient indexing. Most users want specific letter ranges, not to scroll through millions.
 
-```bash
-cd backend
-npm start
-```
+### 2. No Search Functionality
+Alphabet navigation is the primary interface.
 
-Visit the following URLs:
+**Rationale:** Not mentioned in requirements. Search would require different indexing strategy (prefix trees/elasticsearch) outside scope. Keeps focus on core requirement: efficient display and navigation.
 
-- **Swagger UI (Interactive):** http://localhost:3001/api-docs
-- **OpenAPI Spec (JSON):** http://localhost:3001/api-docs.json
-- **Health Check:** http://localhost:3001/health
+### 3. List Virtualization
+Use react-window with InfiniteLoader.
 
-### Available Endpoints
+**Rationale:** Only renders visible items (12-15 at a time), maintains 60fps scrolling, O(1) memory usage instead of O(n).
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/health` | Health check |
-| GET | `/api/users/index` | Get alphabetical index with counts |
-| GET | `/api/users?letter=A&cursor=0&limit=50` | Get paginated users by letter |
+### 4. File-Based Storage
+Stream data directly from text file using Node.js readline.
 
-### Testing Endpoints
+**Rationale:** Requirements allow "file-based or backend/database". Simpler deployment, demonstrates efficient streaming algorithms, suitable for read-only sorted data.
 
-Use the Swagger UI to test endpoints interactively:
+### 5. Cursor-Based Pagination
+Use cursors (position offsets) instead of page numbers.
 
-1. Navigate to http://localhost:3001/api-docs
-2. Click on any endpoint to expand
-3. Click "Try it out"
-4. Enter parameters (if required)
-5. Click "Execute" to see live results
+**Rationale:** Consistent results even if data changes, efficient for large datasets, no need to skip rows like SQL OFFSET.
 
-### Environment Variables
+## Performance Features
 
-**Backend (.env):**
-```bash
-PORT=3001
-NODE_ENV=development
-BASE_URL=http://localhost:3001
-DATA_FILE_PATH=./data/usernames.txt
-DEFAULT_PAGE_LIMIT=50
-MAX_PAGE_LIMIT=100
-```
+- Index built once at startup (not per request)
+- File streaming (never loads full file into memory)
+- Efficient cursor-based pagination
+- Supports 10M+ usernames with ~35MB RAM usage
+- Request latency: 15-25ms average
+- Startup time: 2-3 seconds for 10M dataset
 
-**Frontend (.env):**
-```bash
-VITE_API_BASE_URL=http://localhost:3001
-```
-
-## Development Process
-
-This project follows TDD (RED → GREEN → REFACTOR) with strict issue tracking and PR-based workflow.
-
-### Git Workflow
-1. Create feature branch from `main`
-2. Implement changes
-3. Run tests and linting
-4. Commit with descriptive messages
-5. Create Pull Request
-6. Merge after review
-
-### Branch Naming Convention
-```
-feature/issue-X-descriptive-name
-```
-
-### Commit Message Format
-```
-Brief summary (imperative mood)
-
-- Bullet point details
-- What changed and why
-- Reference to issue
-
-Addresses Issue #X
-```
-
-## Testing Strategy
-
-- **Backend**: Jest + Supertest for API testing
-- **Frontend**: React Testing Library for component testing (coming in Issue #10+)
-- **TDD Approach**: Write failing tests first (RED), make them pass (GREEN), then refactor
-
-### Current Test Status
-
-#### Backend Tests
-- **Health Check**: 2/2 passing
-- **Repository Layer**: 12/12 passing
-- **User Index API**: 5/5 passing
-- **User Pagination**: 12/12 passing
-
-**Total**: 38 passing, 0 failing, 38 total
-
-All tests passing - GREEN phase complete
-
-Run tests:
-```bash
-cd backend
-npm test
-```
-
-Watch mode:
-```bash
-npm run test:watch
-```
-
-Coverage report:
-```bash
-npm run test:coverage
-```
+See [Performance Benchmarks](docs/PERFORMANCE.md) for detailed metrics.
 
 ## Issues Progress
 
-- Issue #1-8: Backend implementation and testing (COMPLETED)
-- Issue #9: React setup and base layout (COMPLETED)
-- Issue #10: Infinite scroll and alphabet navigation (COMPLETED)
-- Issue #11: Dockerization and environment setup (TODO)
-- Issue #12: Final documentation and submission readiness (TODO)
+- ✅ Issue #1-8: Backend implementation and testing (COMPLETED)
+- ✅ Issue #9: React setup and base layout (COMPLETED)
+- ✅ Issue #10: Infinite scroll and alphabet navigation (COMPLETED)
+- ✅ Issue #11: Dockerization and environment setup (COMPLETED)
+- ✅ Issue #12: Final documentation and submission readiness (COMPLETED)
 
 ---
 
-**Status**: Backend Complete - Frontend Core Features Complete  
+**Status**: Production Ready  
 **Created**: 2025-12-31  
-**Last Updated**: 2026-01-03  
+**Last Updated**: 2026-01-04  
 **Author**: Taha BENMALEK <benmalektaha.inpt@gmail.com>
+
+## License
+
+MIT License - See LICENSE file for details

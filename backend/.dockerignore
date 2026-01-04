@@ -1,0 +1,17 @@
+# Docker ignore for backend
+# Excludes unnecessary files from Docker build context
+
+node_modules
+npm-debug.log
+.env
+.env.*
+!.env.example
+coverage
+*.log
+.git
+.gitignore
+README.md
+tests
+.eslintrc.json
+.prettierrc.json
+jest.config.js
