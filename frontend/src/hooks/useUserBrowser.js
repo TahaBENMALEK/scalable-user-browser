@@ -3,9 +3,10 @@
  * Custom hook for managing user browsing state
  * Handles alphabet index, user fetching, and pagination
  * Shows all users by default, filters by letter when selected
+ * Improved with better state management and error handling
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import apiService from '../services/apiService';
 
 function useUserBrowser() {
@@ -19,6 +20,9 @@ function useUserBrowser() {
   const [indexLoading, setIndexLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentLetterIndex, setCurrentLetterIndex] = useState(0);
+  
+  // Use ref to prevent duplicate fetches
+  const fetchInProgress = useRef(false);
 
   // Fetch alphabet index on mount
   useEffect(() => {
@@ -35,7 +39,7 @@ function useUserBrowser() {
           fetchUsersForAllMode(data.index, 0);
         }
       } catch (err) {
-        setError('Failed to load alphabet index');
+        setError('Failed to load alphabet index. Please refresh the page.');
         console.error('Index error:', err);
       } finally {
         setIndexLoading(false);
@@ -47,12 +51,13 @@ function useUserBrowser() {
 
   // Fetch users for "ALL" mode (letter by letter)
   const fetchUsersForAllMode = useCallback(async (indexData, letterIdx) => {
-    if (letterIdx >= indexData.length) {
+    if (letterIdx >= indexData.length || fetchInProgress.current) {
       setHasMore(false);
       return;
     }
 
     try {
+      fetchInProgress.current = true;
       setLoading(true);
       const letter = indexData[letterIdx].letter;
       const data = await apiService.getUsersByLetter(letter, 0, 50);
@@ -62,19 +67,21 @@ function useUserBrowser() {
       setHasMore(letterIdx < indexData.length - 1 || data.hasMore);
       setError(null);
     } catch (err) {
-      setError('Failed to load users');
+      setError(`Failed to load users for letter ${indexData[letterIdx]?.letter || ''}`);
       console.error('Fetch error:', err);
     } finally {
       setLoading(false);
+      fetchInProgress.current = false;
     }
   }, []);
 
   // Fetch users for specific letter
   const fetchUsers = useCallback(
     async (letter, cursorPosition = 0, append = false) => {
-      if (loading) return;
+      if (loading || fetchInProgress.current) return;
 
       try {
+        fetchInProgress.current = true;
         setLoading(true);
         const data = await apiService.getUsersByLetter(letter, cursorPosition);
 
@@ -93,14 +100,18 @@ function useUserBrowser() {
         console.error('Fetch error:', err);
       } finally {
         setLoading(false);
+        fetchInProgress.current = false;
       }
     },
     [loading]
   );
 
-  // Handle letter selection
+  // Handle letter selection with smooth transition
   const handleLetterSelect = useCallback(
     (letter) => {
+      // Prevent selection during loading
+      if (loading || indexLoading) return;
+
       if (letter === 'ALL') {
         // Reset to show all
         setSelectedLetter('ALL');
@@ -119,12 +130,12 @@ function useUserBrowser() {
         fetchUsers(letter, 0, false);
       }
     },
-    [fetchUsers, fetchUsersForAllMode, index]
+    [fetchUsers, fetchUsersForAllMode, index, loading, indexLoading]
   );
 
   // Load more users (infinite scroll)
   const loadMore = useCallback(() => {
-    if (loading) return Promise.resolve();
+    if (loading || fetchInProgress.current) return Promise.resolve();
 
     if (selectedLetter === 'ALL') {
       // Continue loading next letters

@@ -2,6 +2,7 @@
  * Header Component
  * Application header with branding and navigation placeholder
  * Sticky positioning for consistent access across scroll
+ * Fixed height to prevent layout shifts
  */
 
 function Header() {
@@ -18,9 +19,12 @@ function Header() {
         </div>
         
         <nav className="flex items-center gap-4">
-          <span className="text-xs lg:text-sm font-medium text-text-secondary px-3 py-1.5 bg-gray-50 rounded-lg">
-            Ready
-          </span>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-xs lg:text-sm font-medium text-text-secondary px-3 py-1.5 bg-gray-50 rounded-lg">
+              Ready
+            </span>
+          </div>
         </nav>
       </div>
     </header>
