@@ -30,7 +30,7 @@ This project was developed as a technical assessment for the **Sanadtech PFE Int
 - **Performance:** 15-25ms API response time, 35MB memory for 10M users
 - **Scalability:** Architecture supports 1B+ usernames without code changes
 - **Browser Efficiency:** Never freezes - virtualization renders max 15 items at once
-- **Code Quality:** 100% test coverage (38 passing tests), SOLID principles, Clean Architecture
+- **Code Quality:** 100% test coverage (41 passing tests), SOLID principles, Clean Architecture
 - **Production Ready:** Full Docker support, comprehensive documentation
 
 ---
@@ -108,7 +108,7 @@ scalable-user-browser/
 │   │   ├── repositories/      # Data access layer
 │   │   ├── routes/            # API route definitions
 │   │   └── utils/             # Helper functions
-│   ├── tests/                 # Backend tests (38 passing)
+│   ├── tests/                 # Backend tests (41 passing)
 │   ├── Dockerfile
 │   └── package.json
 │
@@ -190,7 +190,7 @@ For detailed technical decisions, see [Architecture Overview](docs/ARCHITECTURE.
 
 **Key Metrics:**
 - Startup: 3 seconds for 10M records
-- API Latency: 15-25ms average
+- API Latency: 10-15ms average
 - Memory: 35MB total (95% more efficient than loading all data)
 - Throughput: 1,500 req/s on single instance
 
@@ -203,7 +203,7 @@ See [Performance Benchmarks](docs/PERFORMANCE.md) for detailed metrics.
 ```bash
 # Run backend tests
 cd backend
-npm test              # 38 passing tests
+npm test              # 41 passing tests
 npm run test:coverage # 100% coverage
 
 # Test with Docker
@@ -236,6 +236,9 @@ Having issues? Check the [Troubleshooting Guide](docs/TROUBLESHOOTING.md) or ope
 **Status:** Production Ready 
 
 **Latest Evidences:**
+
+**Test Passed**
+<img width="305" alt="all tests passed after ratelimit" src="https://github.com/user-attachments/assets/76b6d778-ed6b-4f0f-87c0-4123aa12027a" />
 
 **New Menu Loaded from Sanadtech Sample Data**  
 <img width="1181" height="357" alt="new users" src="https://github.com/user-attachments/assets/1a2c902f-6a63-4913-889b-07fcb66d449c" />

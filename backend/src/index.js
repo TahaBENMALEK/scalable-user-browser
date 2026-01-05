@@ -12,12 +12,16 @@ const swaggerSpec = require('./config/swagger');
 const userRoutes = require('./routes/userRoutes');
 const UserService = require('./services/userService');
 const { AppError } = require('./utils/errors');
+const { apiLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Apply rate limiting to all routes
+app.use(apiLimiter);
 
 // Swagger documentation UI at /api-docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
